@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubarr-managed-nfs
+  labels:
+    {{- include "managed-nfs.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: nfs
+      port: {{ .Values.service.port }}
+      targetPort: 2049
+      protocol: TCP
+  selector:
+    {{- include "managed-nfs.selectorLabels" . | nindent 4 }}

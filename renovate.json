@@ -1,0 +1,46 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "labels": ["dependencies"],
+  "helmv2": {
+    "fileMatch": ["(^|/)Chart\\.yaml$"]
+  },
+  "packageRules": [
+    {
+      "description": "Pin linuxserver images to digest for automated updates",
+      "matchDatasources": ["docker"],
+      "matchPackagePrefixes": ["linuxserver/"],
+      "pinDigests": false,
+      "versioning": "loose"
+    },
+    {
+      "description": "Skip kubarr images (built in-repo)",
+      "matchPackageNames": ["kubarr-backend", "kubarr-frontend"],
+      "enabled": false
+    },
+    {
+      "description": "Skip images pinned to latest",
+      "matchDatasources": ["docker"],
+      "matchCurrentValue": "latest",
+      "enabled": false
+    },
+    {
+      "description": "Group monitoring stack updates",
+      "matchPackageNames": [
+        "grafana/grafana",
+        "victoriametrics/victoria-metrics",
+        "victoriametrics/victoria-logs",
+        "fluent/fluent-bit"
+      ],
+      "groupName": "monitoring stack"
+    },
+    {
+      "description": "Group Kubernetes Dashboard updates",
+      "matchPackageNames": [
+        "kubernetesui/dashboard",
+        "kubernetesui/metrics-scraper"
+      ],
+      "groupName": "kubernetes-dashboard"
+    }
+  ]
+}

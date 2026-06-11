@@ -1,0 +1,134 @@
+# Default values for jellyfin
+# This is a YAML-formatted file.
+
+# Namespace configuration
+namespace:
+  name: jellyfin
+
+# Jellyfin application configuration
+jellyfin:
+  replicaCount: 1
+
+  image:
+    repository: linuxserver/jellyfin
+    pullPolicy: IfNotPresent
+    tag: "latest"
+
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 8096
+    targetPort: 8096
+    annotations: {}
+
+  # Resource limits and requests
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 4000m
+      memory: 4Gi
+
+  # Environment variables
+  env:
+    PUID: "1000"
+    PGID: "1000"
+    TZ: "Etc/UTC"
+
+  # Base path for reverse proxy (leave empty for root)
+  # Jellyfin serves at root; it redirects / to /web/ internally
+  basePath: ""
+
+  # Probes configuration
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /health
+      port: 8096
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /health
+      port: 8096
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+# Security context
+securityContext:
+  runAsNonRoot: false
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 1000
+
+# Service Account
+serviceAccount:
+  create: true
+  name: jellyfin
+  annotations: {}
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
+
+# Pod annotations
+podAnnotations: {}
+
+# Image pull secrets
+imagePullSecrets: []
+
+# Storage configuration. All app storage is routed through the shared NFS claim.
+storage:
+  media:
+    existingClaim: media-data
+    mountPath: /data
+    configMountPath: /config
+    configSubPath: config/jellyfin
+    cacheMountPath: /cache
+    cacheSubPath: cache/jellyfin
+    dataSubPath: media
+  readOnly: true  # Jellyfin only reads media
+
+# VPN Configuration
+# When enabled, a Gluetun sidecar container is added to route all traffic through VPN
+vpn:
+  enabled: false
+  secretName: ""
+  image:
+    repository: qmcgaw/gluetun
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  killSwitch: true
+  firewallOutboundSubnets: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+  # Port forwarding via NAT-PMP (supported by ProtonVPN, PIA, AirVPN)
+  portForwarding:
+    enabled: false
+    upCommand: ""
+
+# Network policy configuration
+networkPolicy:
+  enabled: true
+  ingressFrom:
+    - kubarr         # kubarr dashboard proxy
+    - jellyseerr
+  egressTo: []

@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubarr-managed-nfs
+  labels:
+    {{- include "managed-nfs.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "managed-nfs.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "managed-nfs.selectorLabels" . | nindent 8 }}
+    spec:
+      hostNetwork: {{ .Values.nfs.hostNetwork }}
+      dnsPolicy: {{ ternary "ClusterFirstWithHostNet" "ClusterFirst" .Values.nfs.hostNetwork }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: nfs
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SHARED_DIRECTORY
+              value: {{ .Values.nfs.exportPath | quote }}
+            - name: PERMITTED
+              value: {{ .Values.nfs.permitted | quote }}
+            {{- if .Values.nfs.readOnly }}
+            - name: READ_ONLY
+              value: "true"
+            {{- end }}
+            {{- if .Values.nfs.sync }}
+            - name: SYNC
+              value: "true"
+            {{- end }}
+          ports:
+            - name: nfs
+              containerPort: 2049
+              protocol: TCP
+          securityContext:
+            privileged: true
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.nfs.exportPath | quote }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.claimName }}

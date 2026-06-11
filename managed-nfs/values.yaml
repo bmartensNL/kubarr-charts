@@ -1,0 +1,31 @@
+image:
+  repository: itsthenetwork/nfs-server-alpine
+  tag: "12"
+  pullPolicy: IfNotPresent
+
+service:
+  port: 2049
+
+nfs:
+  exportPath: /exports
+  permitted: "*"
+  readOnly: false
+  sync: false
+  hostNetwork: true
+
+persistence:
+  claimName: managed-nfs-data
+  size: 1Ti
+  storageClassName: ""
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

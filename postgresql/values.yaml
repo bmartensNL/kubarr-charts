@@ -1,0 +1,33 @@
+image:
+  repository: postgres
+  tag: "16-alpine"
+  pullPolicy: IfNotPresent
+
+database:
+  name: kubarr
+  user: kubarr
+  password: kubarr
+
+service:
+  port: 5432
+
+persistence:
+  size: 5Gi
+  storageClassName: ""
+
+storage:
+  media:
+    existingClaim: media-data
+    dataSubPath: system/postgresql
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

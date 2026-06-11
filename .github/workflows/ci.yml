@@ -1,0 +1,21 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  helm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: azure/setup-helm@v4
+      - run: |
+          for chart in */; do
+            if [ -f "$chart/Chart.yaml" ]; then
+              echo "Linting $chart..."
+              helm lint "$chart"
+            fi
+          done

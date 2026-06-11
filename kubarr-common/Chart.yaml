@@ -1,0 +1,5 @@
+apiVersion: v2
+name: kubarr-common
+description: Shared Helm helpers for Kubarr application charts
+type: library
+version: 0.1.0
