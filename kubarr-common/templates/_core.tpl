@@ -77,9 +77,14 @@ metadata:
   namespace: {{ $root.Values.namespace.name }}
   labels:
     {{- include "kubarr-common.labels" $root | nindent 4 }}
-  {{- with $app.service.annotations }}
+  {{- if or $app.basePath $app.service.annotations }}
   annotations:
+    {{- if $app.basePath }}
+    kubarr.io/base-path: {{ $app.basePath | quote }}
+    {{- end }}
+    {{- with $app.service.annotations }}
     {{- toYaml . | nindent 4 }}
+    {{- end }}
   {{- end }}
 spec:
   type: {{ $app.service.type }}
