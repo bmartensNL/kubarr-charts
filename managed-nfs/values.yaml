@@ -1,3 +1,7 @@
+namespace:
+  create: true
+  name: kubarr-storage
+
 image:
   repository: itsthenetwork/nfs-server-alpine
   tag: "12"

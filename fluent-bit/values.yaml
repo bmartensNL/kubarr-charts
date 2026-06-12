@@ -1,5 +1,5 @@
 namespace:
-  create: false  # kubarr deployment manager creates the namespace
+  create: true
   name: fluent-bit
 
 fluentbit:

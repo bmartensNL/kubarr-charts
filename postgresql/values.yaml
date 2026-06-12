@@ -1,3 +1,7 @@
+namespace:
+  create: true
+  name: kubarr-database
+
 image:
   repository: postgres
   tag: "16-alpine"

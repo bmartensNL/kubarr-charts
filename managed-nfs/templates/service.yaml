@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kubarr-managed-nfs
+  namespace: {{ .Values.namespace.name }}
   labels:
     {{- include "managed-nfs.labels" . | nindent 4 }}
 spec:

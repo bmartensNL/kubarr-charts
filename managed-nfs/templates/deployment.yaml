@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kubarr-managed-nfs
+  namespace: {{ .Values.namespace.name }}
   labels:
     {{- include "managed-nfs.labels" . | nindent 4 }}
 spec:

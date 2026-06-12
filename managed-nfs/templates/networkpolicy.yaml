@@ -3,6 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: kubarr-managed-nfs
+  namespace: {{ .Values.namespace.name }}
   labels:
     {{- include "managed-nfs.labels" . | nindent 4 }}
 spec:
