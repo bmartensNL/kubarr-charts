@@ -3,7 +3,7 @@
 
 # Namespace configuration
 namespace:
-  create: true
+  create: false
   name: jellyseerr
 
 # Jellyseerr application configuration
