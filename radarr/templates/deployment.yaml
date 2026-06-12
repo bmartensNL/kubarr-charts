@@ -75,8 +75,7 @@ spec:
               echo "Config file contents:"
               cat "$CONFIG_FILE"
           volumeMounts:
-            - name: config
-              mountPath: /config
+            {{- include "kubarr-common.storage.configMount" (dict "root" . "mountPath" "/config") | nindent 12 }}
       containers:
         {{- if .Values.vpn.enabled }}
         # Gluetun VPN sidecar - routes all pod traffic through VPN
