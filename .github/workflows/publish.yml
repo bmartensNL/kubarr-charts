@@ -31,6 +31,8 @@ jobs:
 
       - name: Package and push all charts
         run: |
+          set -euo pipefail
+
           OCI_REPO="${{ steps.vars.outputs.oci_repo }}"
           echo "## Helm Charts Published" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -40,6 +42,13 @@ jobs:
 
             if [ ! -f "$chart_dir/Chart.yaml" ]; then
               echo "Skipping $chart_name (no Chart.yaml)"
+              continue
+            fi
+
+            version=$(helm show chart "$chart_dir" | grep '^version:' | awk '{print $2}')
+            if helm show chart "$OCI_REPO/$chart_name" --version "$version" >/dev/null 2>&1; then
+              echo "Skipping $chart_name:$version (already published)"
+              echo "- \`${chart_name}:${version}\` already exists" >> $GITHUB_STEP_SUMMARY
               continue
             fi
 
@@ -58,7 +67,6 @@ jobs:
             echo "Pushing $chart_name..."
             helm push "$pkg" "$OCI_REPO"
 
-            version=$(helm show chart "$chart_dir" | grep '^version:' | awk '{print $2}')
             echo "- \`${chart_name}:${version}\` → \`${OCI_REPO}/${chart_name}\`" >> $GITHUB_STEP_SUMMARY
 
             rm -f "$pkg"

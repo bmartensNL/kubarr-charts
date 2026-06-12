@@ -12,7 +12,7 @@ sonarr:
   image:
     repository: linuxserver/sonarr
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: "4.0.17"
 
   # Service configuration
   service:
@@ -106,7 +106,7 @@ vpn:
   # Gluetun container image
   image:
     repository: qmcgaw/gluetun
-    tag: "latest"
+    tag: "v3.41.1"
     pullPolicy: IfNotPresent
   # Resource limits for Gluetun container
   resources:

@@ -12,7 +12,7 @@ jellyfin:
   image:
     repository: linuxserver/jellyfin
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: "10.11.11"
 
   # Service configuration
   service:
@@ -109,7 +109,7 @@ vpn:
   secretName: ""
   image:
     repository: qmcgaw/gluetun
-    tag: "latest"
+    tag: "v3.41.1"
     pullPolicy: IfNotPresent
   resources:
     requests:

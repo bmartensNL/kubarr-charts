@@ -14,7 +14,7 @@ qbittorrent:
   image:
     repository: linuxserver/qbittorrent
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: "5.2.1"
 
   # Service configuration
   service:
@@ -129,7 +129,7 @@ vpn:
   # Gluetun container image
   image:
     repository: qmcgaw/gluetun
-    tag: "latest"
+    tag: "v3.41.1"
     pullPolicy: IfNotPresent
   # Resource limits for Gluetun container
   resources:
@@ -174,7 +174,7 @@ exporter:
   enabled: true
   image:
     repository: esanchezm/prometheus-qbittorrent-exporter
-    tag: "latest"
+    tag: "v1.7.0"
     pullPolicy: IfNotPresent
   port: 8000
   resources:

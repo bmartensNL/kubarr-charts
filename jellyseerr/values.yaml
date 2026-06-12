@@ -13,7 +13,7 @@ jellyseerr:
   image:
     repository: fallenbagel/jellyseerr
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: "2.7.3"
 
   # Base path for URL routing (leave empty for root)
   # Jellyseerr does not support serving from a subpath
@@ -118,7 +118,7 @@ vpn:
   secretName: ""
   image:
     repository: qmcgaw/gluetun
-    tag: "latest"
+    tag: "v3.41.1"
     pullPolicy: IfNotPresent
   resources:
     requests:

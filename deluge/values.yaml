@@ -13,7 +13,7 @@ deluge:
   image:
     repository: linuxserver/deluge
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: "2.2.0"
 
   # Base path for URL routing (leave empty for root)
   # Deluge does not support serving from a subpath
@@ -106,7 +106,7 @@ vpn:
   secretName: ""
   image:
     repository: qmcgaw/gluetun
-    tag: "latest"
+    tag: "v3.41.1"
     pullPolicy: IfNotPresent
   resources:
     requests:

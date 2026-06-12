@@ -12,7 +12,7 @@ radarr:
   image:
     repository: linuxserver/radarr
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: "6.2.1"
 
   # Service configuration
   service:
@@ -106,7 +106,7 @@ vpn:
   # Gluetun container image
   image:
     repository: qmcgaw/gluetun
-    tag: "latest"
+    tag: "v3.41.1"
     pullPolicy: IfNotPresent
   # Resource limits for Gluetun container
   resources:

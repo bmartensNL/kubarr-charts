@@ -2,8 +2,7 @@ apiVersion: v2
 name: qbittorrent
 description: Free and open-source BitTorrent client with web interface
 type: application
-version: 0.1.0
-appVersion: "4.6.2"
+version: 5.2.1
 keywords:
   - qbittorrent
   - bittorrent

@@ -14,7 +14,7 @@ backend:
   image:
     repository: kubarr-backend
     pullPolicy: Never
-    tag: "latest"
+    tag: "0.1.0"
 
   service:
     type: NodePort
@@ -61,7 +61,7 @@ frontend:
   image:
     repository: kubarr-frontend
     pullPolicy: Never
-    tag: "latest"
+    tag: "0.1.0"
 
   service:
     type: ClusterIP
