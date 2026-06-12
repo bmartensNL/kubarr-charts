@@ -12,5 +12,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "kubarr.fullname" . }}:{{ .Values.backend.service.port }}/api/system/health']
+      args: ['{{ include "kubarr.fullname" . }}-backend:{{ .Values.backend.service.port }}/api/system/health']
   restartPolicy: Never
