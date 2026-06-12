@@ -72,4 +72,4 @@ networkPolicy:
   ingressFrom:
     - fluent-bit     # for log ingestion
     - grafana        # for log queries
-    - kubarr         # for log queries
+    - kubarr-system  # for log queries

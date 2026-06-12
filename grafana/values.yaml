@@ -92,7 +92,7 @@ podAnnotations: {}
 networkPolicy:
   enabled: true
   ingressFrom:
-    - kubarr         # kubarr dashboard proxy
+    - kubarr-system  # kubarr dashboard proxy
   egressTo:
     - victoriametrics
     - victorialogs

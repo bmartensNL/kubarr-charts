@@ -34,7 +34,7 @@ fluentbit:
     - jellyseerr
     - jackett
     - sabnzbd
-    - kubarr
+    - kubarr-system
     - victoriametrics
     - victorialogs
     - fluent-bit

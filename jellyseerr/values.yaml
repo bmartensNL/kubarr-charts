@@ -138,7 +138,7 @@ vpn:
 networkPolicy:
   enabled: true
   ingressFrom:
-    - kubarr         # kubarr dashboard proxy
+    - kubarr-system  # kubarr dashboard proxy
   egressTo:
     - jellyfin
     - sonarr

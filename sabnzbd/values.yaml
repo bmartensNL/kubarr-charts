@@ -133,7 +133,7 @@ storage:
 networkPolicy:
   enabled: true
   ingressFrom:
-    - kubarr         # kubarr dashboard proxy
+    - kubarr-system  # kubarr dashboard proxy
     - sonarr         # arr apps connecting to download client
     - radarr
     - victoriametrics  # metrics scraping
