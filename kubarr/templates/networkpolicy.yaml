@@ -52,7 +52,7 @@ spec:
     - to:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: postgresql
+              kubernetes.io/metadata.name: {{ .Values.database.namespace }}
       ports:
         - protocol: TCP
           port: 5432

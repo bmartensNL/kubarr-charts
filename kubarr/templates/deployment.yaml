@@ -46,6 +46,11 @@ spec:
             - name: KUBARR_OAUTH2_ENABLED
               value: "true"
             {{- end }}
+            - name: KUBARR_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.secretName }}
+                  key: uri
             {{- if .Values.storage.hostPath.enabled }}
             - name: KUBARR_STORAGE_PATH
               value: "{{ .Values.storage.mountPath }}"

@@ -2,7 +2,7 @@ apiVersion: v2
 name: kubarr
 description: Kubarr - Kubernetes media stack management
 type: application
-version: 0.1.0+pinned-images
+version: 0.1.1
 keywords:
   - kubernetes
   - media
