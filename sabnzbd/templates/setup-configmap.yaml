@@ -76,5 +76,11 @@ data:
       fi
     fi
 
+    # SABnzbd does not serve correctly when Kubarr forwards the base path
+    # upstream. Keep it at root and let the backend proxy strip /sabnzbd.
+    if grep -q "^url_base" "$CONFIG_FILE" 2>/dev/null; then
+      sed -i "s|^url_base.*|url_base = |" "$CONFIG_FILE"
+    fi
+
     echo "[setup] SABnzbd API key configured successfully"
     echo "[setup] Note: SABnzbd may need a restart to pick up changes"
