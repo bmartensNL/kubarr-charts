@@ -76,16 +76,5 @@ data:
       fi
     fi
 
-    {{- if .Values.sabnzbd.basePath }}
-    # Keep SABnzbd-generated links and redirects aligned with the Kubarr proxy path.
-    if grep -q "^url_base" "$CONFIG_FILE" 2>/dev/null; then
-      sed -i "s|^url_base.*|url_base = {{ .Values.sabnzbd.basePath }}|" "$CONFIG_FILE"
-    else
-      if grep -q "^\[misc\]" "$CONFIG_FILE"; then
-        sed -i "/^\[misc\]/a url_base = {{ .Values.sabnzbd.basePath }}" "$CONFIG_FILE"
-      fi
-    fi
-    {{- end }}
-
     echo "[setup] SABnzbd API key configured successfully"
     echo "[setup] Note: SABnzbd may need a restart to pick up changes"

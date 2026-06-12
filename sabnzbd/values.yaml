@@ -11,9 +11,6 @@ namespace:
 sabnzbd:
   replicaCount: 1
 
-  # Base path for reverse proxy.
-  basePath: "/sabnzbd"
-
   image:
     repository: linuxserver/sabnzbd
     pullPolicy: IfNotPresent
