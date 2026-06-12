@@ -74,6 +74,8 @@ frontend:
     type: ClusterIP
     port: 80
 
+  url: ""  # Defaults to http://<release>-frontend.<namespace>.svc.cluster.local:<port>
+
   resources:
     limits:
       cpu: 50m

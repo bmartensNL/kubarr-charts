@@ -51,6 +51,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.database.secretName }}
                   key: uri
+            - name: KUBARR_FRONTEND_URL
+              value: {{ default (printf "http://%s-frontend.%s.svc.cluster.local:%v" (include "kubarr.fullname" .) .Values.namespace.name .Values.frontend.service.port) .Values.frontend.url | quote }}
             {{- if .Values.storage.hostPath.enabled }}
             - name: KUBARR_STORAGE_PATH
               value: "{{ .Values.storage.mountPath }}"
