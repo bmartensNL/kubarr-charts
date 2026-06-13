@@ -45,6 +45,11 @@
 {{- $namespace := default $root.Release.Namespace $root.Values.namespace.name -}}
 {{- $claimName := default "media-data" $media.existingClaim -}}
 {{- $pvName := printf "kubarr-media-%s-%s" $namespace $claimName | trunc 63 | trimSuffix "-" -}}
+{{- $defaultNfsServer := "kubarr-managed-nfs.kubarr-storage.svc.cluster.local" -}}
+{{- $managedNfsService := lookup "v1" "Service" "kubarr-storage" "kubarr-managed-nfs" -}}
+{{- if and $managedNfsService $managedNfsService.spec.clusterIP -}}
+{{- $defaultNfsServer = $managedNfsService.spec.clusterIP -}}
+{{- end -}}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -57,7 +62,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: ""
   nfs:
-    server: {{ default "kubarr-managed-nfs.kubarr-storage.svc.cluster.local" $nfs.server }}
+    server: {{ default $defaultNfsServer $nfs.server }}
     path: {{ default "/" $nfs.path }}
   claimRef:
     namespace: {{ $namespace }}

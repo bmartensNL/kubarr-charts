@@ -2,7 +2,7 @@ apiVersion: v2
 name: kubarr
 description: Kubarr - Kubernetes media stack management
 type: application
-version: 0.2.1
+version: 0.2.2
 keywords:
   - kubernetes
   - media
@@ -34,5 +34,5 @@ annotations:
   kubarr.io/browseable: "false"
 dependencies:
   - name: kubarr-common
-    version: 0.3.0
+    version: 0.3.1
     repository: file://../kubarr-common
