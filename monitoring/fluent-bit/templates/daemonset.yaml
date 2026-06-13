@@ -21,14 +21,24 @@ spec:
     spec:
       serviceAccountName: {{ include "fluent-bit.serviceAccountName" . }}
       securityContext:
-        runAsUser: 0
-        runAsGroup: 0
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: fluent-bit
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           image: "{{ .Values.fluentbit.image.repository }}:{{ .Values.fluentbit.image.tag }}"
           imagePullPolicy: {{ .Values.fluentbit.image.pullPolicy }}
           ports:
@@ -61,8 +71,11 @@ spec:
             - name: pods
               mountPath: /var/log/pods
               readOnly: true
-            - name: varlog
-              mountPath: /var/log
+            - name: state
+              mountPath: {{ .Values.fluentbit.statePath }}
+              subPath: {{ .Values.storage.media.dataSubPath }}
+            - name: tmp
+              mountPath: /tmp
       volumes:
         - name: config
           configMap:
@@ -70,6 +83,9 @@ spec:
         - name: pods
           hostPath:
             path: {{ .Values.fluentbit.podLogPath }}
-        - name: varlog
-          hostPath:
-            path: /var/log
+            type: Directory
+        - name: state
+          persistentVolumeClaim:
+            claimName: {{ .Values.storage.media.existingClaim }}
+        - name: tmp
+          emptyDir: {}

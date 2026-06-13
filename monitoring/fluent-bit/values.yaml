@@ -22,6 +22,9 @@ fluentbit:
   # Container log paths on host
   podLogPath: /var/log/pods
 
+  # Fluent Bit state and buffers are stored on the shared NFS claim.
+  statePath: /buffers
+
   # Namespaces to collect logs from (comma-separated list for Lua matching)
   allowedNamespaces:
     - sonarr
@@ -54,6 +57,11 @@ tolerations:
     operator: Exists
 
 podAnnotations: {}
+
+storage:
+  media:
+    existingClaim: media-data
+    dataSubPath: system/fluent-bit
 
 # Network policy configuration
 networkPolicy:

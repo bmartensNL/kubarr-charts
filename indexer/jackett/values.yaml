@@ -76,10 +76,17 @@ storage:
 # Security context
 securityContext:
   runAsNonRoot: false  # linuxserver images run as root but switch to PUID/PGID
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
 
 # Pod security context
 podSecurityContext:
   fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
 
 # Service Account
 serviceAccount:

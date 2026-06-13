@@ -35,7 +35,10 @@ spec:
           image: "{{ .Values.vpn.image.repository }}:{{ .Values.vpn.image.tag }}"
           imagePullPolicy: {{ .Values.vpn.image.pullPolicy }}
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
+              drop:
+                - ALL
               add:
                 - NET_ADMIN
           envFrom:

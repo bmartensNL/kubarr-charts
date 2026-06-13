@@ -30,6 +30,11 @@ spec:
       initContainers:
         - name: init-config
           image: busybox:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           command:
             - sh
             - -c
@@ -83,7 +88,10 @@ spec:
           image: "{{ .Values.vpn.image.repository }}:{{ .Values.vpn.image.tag }}"
           imagePullPolicy: {{ .Values.vpn.image.pullPolicy }}
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
+              drop:
+                - ALL
               add:
                 - NET_ADMIN
           envFrom:
@@ -177,7 +185,8 @@ spec:
             {{- toYaml .Values.radarr.resources | nindent 12 }}
           volumeMounts:
             {{- include "kubarr-common.storage.configMount" (dict "root" .) | nindent 12 }}
-            {{- include "kubarr-common.storage.mediaMount" (dict "root" . "mountPath" .Values.storage.media.mountPath "subPath" .Values.storage.media.dataSubPath) | nindent 12 }}
+            {{- include "kubarr-common.storage.mediaMount" (dict "root" . "mountPath" .Values.storage.media.mediaMountPath "subPath" .Values.storage.media.mediaSubPath) | nindent 12 }}
+            {{- include "kubarr-common.storage.mediaMount" (dict "root" . "mountPath" .Values.storage.media.downloadsMountPath "subPath" .Values.storage.media.downloadsSubPath) | nindent 12 }}
             - name: setup-scripts
               mountPath: /custom-services.d/setup-downloadclients
               subPath: setup-downloadclients.sh

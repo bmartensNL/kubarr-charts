@@ -60,6 +60,16 @@ backend:
       value: "INFO"
     - name: KUBARR_OAUTH2_ISSUER_URL
       value: "http://kubarr-backend.kubarr-system.svc.cluster.local:8000"
+    - name: HOME
+      value: /tmp
+    - name: XDG_CACHE_HOME
+      value: /tmp/.cache
+    - name: HELM_CACHE_HOME
+      value: /tmp/helm/cache
+    - name: HELM_CONFIG_HOME
+      value: /tmp/helm/config
+    - name: HELM_DATA_HOME
+      value: /tmp/helm/data
 
 # Frontend configuration (BusyBox httpd serving static files)
 frontend:
@@ -145,6 +155,8 @@ podSecurityContext:
   runAsNonRoot: true
   runAsUser: 1000
   fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
 
 # Security Context
 securityContext:
@@ -152,7 +164,7 @@ securityContext:
   capabilities:
     drop:
       - ALL
-  readOnlyRootFilesystem: false
+  readOnlyRootFilesystem: true
 
 # Node selector
 nodeSelector: {}

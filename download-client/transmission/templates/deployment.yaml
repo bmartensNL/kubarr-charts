@@ -30,6 +30,11 @@ spec:
       initContainers:
         - name: init-config
           image: busybox:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           command:
             - sh
             - -c
@@ -62,7 +67,10 @@ spec:
           image: "{{ .Values.vpn.image.repository }}:{{ .Values.vpn.image.tag }}"
           imagePullPolicy: {{ .Values.vpn.image.pullPolicy }}
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
+              drop:
+                - ALL
               add:
                 - NET_ADMIN
           envFrom:
@@ -159,6 +167,12 @@ spec:
         {{- if .Values.exporter.enabled }}
         # Metrics exporter sidecar
         - name: exporter
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           image: "{{ .Values.exporter.image.repository }}:{{ .Values.exporter.image.tag }}"
           imagePullPolicy: {{ .Values.exporter.image.pullPolicy }}
           ports:

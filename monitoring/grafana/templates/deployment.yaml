@@ -27,6 +27,8 @@ spec:
         runAsUser: 472
         runAsGroup: 472
         fsGroup: 472
+        seccompProfile:
+          type: RuntimeDefault
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -41,6 +43,12 @@ spec:
       {{- end }}
       containers:
         - name: grafana
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           image: "{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag }}"
           imagePullPolicy: {{ .Values.grafana.image.pullPolicy }}
           ports:
@@ -89,6 +97,8 @@ spec:
               mountPath: /var/lib/grafana/dashboards
             - name: data
               mountPath: /var/lib/grafana
+            - name: tmp
+              mountPath: /tmp
       volumes:
         - name: config
           configMap:
@@ -117,3 +127,5 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        - name: tmp
+          emptyDir: {}

@@ -2,7 +2,7 @@ apiVersion: v2
 name: managed-nfs
 description: Managed NFS server for Kubarr shared media storage
 type: application
-version: 12.0.1
+version: 12.1.0
 annotations:
   kubarr.io/system: "true"
   kubarr.io/hidden: "true"

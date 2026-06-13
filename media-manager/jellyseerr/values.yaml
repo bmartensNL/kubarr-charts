@@ -76,10 +76,17 @@ jellyseerr:
 # Security context
 securityContext:
   runAsNonRoot: false
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
 
 # Pod security context
 podSecurityContext:
   fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
 
 # Service Account
 serviceAccount:

@@ -61,10 +61,17 @@ radarr:
 # Security context
 securityContext:
   runAsNonRoot: false
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
 
 # Pod security context
 podSecurityContext:
   fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
 
 # Service Account
 serviceAccount:
@@ -91,10 +98,12 @@ imagePullSecrets: []
 storage:
   media:
     existingClaim: media-data
-    mountPath: /data
+    mediaMountPath: /media
+    downloadsMountPath: /downloads
     configMountPath: /config
     configSubPath: config/radarr
-    dataSubPath: .
+    mediaSubPath: media
+    downloadsSubPath: downloads
 
 # VPN Configuration
 # When enabled, a Gluetun sidecar container is added to route all traffic through VPN

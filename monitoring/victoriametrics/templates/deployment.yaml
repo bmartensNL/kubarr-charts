@@ -30,6 +30,8 @@ spec:
         runAsUser: 65534
         runAsGroup: 65534
         fsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -44,6 +46,12 @@ spec:
       {{- end }}
       containers:
         - name: victoriametrics
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           image: "{{ .Values.victoriametrics.image.repository }}:{{ .Values.victoriametrics.image.tag }}"
           imagePullPolicy: {{ .Values.victoriametrics.image.pullPolicy }}
           args:
@@ -92,6 +100,8 @@ spec:
             - name: data
               mountPath: /victoria-metrics-data
               subPath: {{ .Values.storage.media.dataSubPath }}
+            - name: tmp
+              mountPath: /tmp
       volumes:
         - name: config
           configMap:
@@ -99,3 +109,5 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "kubarr-common.storage.mediaClaimName" (dict "root" .) | default (printf "%s-data" (include "victoriametrics.fullname" .)) }}
+        - name: tmp
+          emptyDir: {}

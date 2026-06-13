@@ -58,6 +58,8 @@ spec:
           volumeMounts:
             - name: storage
               mountPath: {{ .Values.storage.mountPath }}
+            - name: tmp
+              mountPath: /tmp
           livenessProbe:
             {{- toYaml .Values.backend.livenessProbe | nindent 12 }}
           readinessProbe:
@@ -68,6 +70,8 @@ spec:
         - name: storage
           persistentVolumeClaim:
             claimName: {{ .Values.storage.media.existingClaim }}
+        - name: tmp
+          emptyDir: {}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
