@@ -21,10 +21,8 @@ spec:
     spec:
       serviceAccountName: {{ include "fluent-bit.serviceAccountName" . }}
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 65532
-        runAsGroup: 65532
-        fsGroup: 65532
+        runAsUser: 0
+        runAsGroup: 0
         seccompProfile:
           type: RuntimeDefault
       {{- with .Values.tolerations }}
