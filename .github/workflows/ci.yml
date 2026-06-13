@@ -17,12 +17,13 @@ jobs:
       - run: |
           set -euo pipefail
 
-          for chart in */; do
+          while IFS= read -r chart_yaml; do
+            chart=$(dirname "$chart_yaml")
             if [ -f "$chart/Chart.yaml" ]; then
               echo "Linting $chart..."
-              if grep -q 'repository: file://../kubarr-common' "$chart/Chart.yaml"; then
+              if grep -q 'kubarr-common' "$chart/Chart.yaml"; then
                 helm dependency build "$chart"
               fi
               helm lint "$chart"
             fi
-          done
+          done < <(find . -mindepth 2 -name Chart.yaml | sort)
