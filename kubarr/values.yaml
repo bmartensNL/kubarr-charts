@@ -201,13 +201,12 @@ auth:
     enabled: true
     requireApproval: true
 
-# Storage configuration (hostPath for file browser feature)
+# Storage configuration for the file browser. By default Kubarr mounts the
+# shared NFS-backed media PVC created by bootstrap.
 storage:
-  # HostPath configuration (set by user during setup)
-  hostPath:
-    enabled: false
-    rootPath: ""  # e.g., /mnt/data/kubarr - set during setup wizard
-  mountPath: /data/storage
+  media:
+    existingClaim: media-data
+  mountPath: /data
 
 # Network policy configuration
 networkPolicy:

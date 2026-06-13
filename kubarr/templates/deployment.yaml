@@ -53,28 +53,21 @@ spec:
                   key: uri
             - name: KUBARR_FRONTEND_URL
               value: {{ default (printf "http://%s-frontend.%s.svc.cluster.local:%v" (include "kubarr.fullname" .) .Values.namespace.name .Values.frontend.service.port) .Values.frontend.url | quote }}
-            {{- if .Values.storage.hostPath.enabled }}
             - name: KUBARR_STORAGE_PATH
               value: "{{ .Values.storage.mountPath }}"
-            {{- end }}
-          {{- if .Values.storage.hostPath.enabled }}
           volumeMounts:
             - name: storage
               mountPath: {{ .Values.storage.mountPath }}
-          {{- end }}
           livenessProbe:
             {{- toYaml .Values.backend.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.backend.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
-      {{- if .Values.storage.hostPath.enabled }}
       volumes:
         - name: storage
-          hostPath:
-            path: {{ .Values.storage.hostPath.rootPath }}
-            type: Directory
-      {{- end }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.storage.media.existingClaim }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
