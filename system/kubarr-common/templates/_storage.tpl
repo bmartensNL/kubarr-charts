@@ -32,6 +32,53 @@
 {{- .root.Values.storage.media.existingClaim -}}
 {{- end }}
 
+{{- define "kubarr-common.storage.mediaClaim" -}}
+{{- $root := .root -}}
+{{- $storage := default dict $root.Values.storage -}}
+{{- $media := default dict $storage.media -}}
+{{- $nfs := default dict $media.nfs -}}
+{{- $create := true -}}
+{{- if hasKey $media "create" -}}
+{{- $create = $media.create -}}
+{{- end -}}
+{{- if $create }}
+{{- $namespace := default $root.Release.Namespace $root.Values.namespace.name -}}
+{{- $claimName := default "media-data" $media.existingClaim -}}
+{{- $pvName := printf "kubarr-media-%s-%s" $namespace $claimName | trunc 63 | trimSuffix "-" -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ $pvName }}
+spec:
+  capacity:
+    storage: {{ default "1Ti" $nfs.size }}
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  nfs:
+    server: {{ default "kubarr-managed-nfs.kubarr-storage.svc.cluster.local" $nfs.server }}
+    path: {{ default "/" $nfs.path }}
+  claimRef:
+    namespace: {{ $namespace }}
+    name: {{ $claimName }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $claimName }}
+  namespace: {{ $namespace }}
+spec:
+  volumeName: {{ $pvName }}
+  storageClassName: ""
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ default "1Ti" $nfs.size }}
+{{- end }}
+{{- end }}
+
 {{- define "kubarr-common.storage.configOrMediaVolume" -}}
 {{ include "kubarr-common.storage.mediaVolume" . }}
 {{- end }}
