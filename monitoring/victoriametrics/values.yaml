@@ -71,7 +71,7 @@ networkPolicy:
   enabled: true
   ingressFrom:
     - grafana  # for queries
-    - kubarr-system  # kubarr backend for monitoring
+    - kubarr-backend  # Kubarr backend for monitoring
   # VictoriaMetrics needs to scrape all app namespaces
   scrapeNamespaces:
     - sonarr

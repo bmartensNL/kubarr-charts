@@ -61,10 +61,8 @@ sonarr:
 # Security context
 securityContext:
   runAsNonRoot: false
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-      - ALL
+  allowPrivilegeEscalation: true
+  capabilities: {}
   readOnlyRootFilesystem: false
 
 # Pod security context
@@ -139,7 +137,7 @@ networkPolicy:
   enabled: true
   # Namespaces allowed to send traffic to this app
   ingressFrom:
-    - kubarr-system  # kubarr dashboard proxy
+    - openresty  # Kubarr gateway proxy
     - victoriametrics  # metrics scraping
   # Namespaces this app can send traffic to
   egressTo:

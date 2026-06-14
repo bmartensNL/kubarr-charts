@@ -1,0 +1,43 @@
+enabled: true
+namespace:
+  create: true
+  name: openresty
+replicaCount: 1
+image:
+  repository: openresty/openresty
+  pullPolicy: IfNotPresent
+  tag: "1.27.1.2-alpine"
+service:
+  type: NodePort
+  port: 8080
+  nodePort: 30080
+backend:
+  service:
+    name: kubarr-backend
+    namespace: kubarr-backend
+    port: 8000
+frontend:
+  service:
+    name: kubarr-frontend
+    namespace: kubarr-frontend
+    port: 80
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 25m
+    memory: 64Mi
+env: []

@@ -1,0 +1,12 @@
+apiVersion: v2
+name: openresty
+description: OpenResty gateway for Kubarr
+type: application
+version: 0.2.2
+annotations:
+  kubarr.io/display-name: "OpenResty Gateway"
+  kubarr.io/icon: "openresty"
+  kubarr.io/category: "system"
+  kubarr.io/system: "true"
+  kubarr.io/hidden: "false"
+  kubarr.io/browseable: "false"

@@ -96,10 +96,9 @@ vpn:
 # Security context
 securityContext:
   runAsNonRoot: false
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-      - ALL
+  runAsUser: 0
+  allowPrivilegeEscalation: true
+  capabilities: {}
   readOnlyRootFilesystem: false
 
 # Pod security context
@@ -133,7 +132,7 @@ imagePullSecrets: []
 networkPolicy:
   enabled: true
   ingressFrom:
-    - kubarr-system  # kubarr dashboard proxy
+    - openresty  # Kubarr gateway proxy
     - sonarr
     - radarr
     - victoriametrics

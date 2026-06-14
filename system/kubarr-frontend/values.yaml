@@ -1,0 +1,22 @@
+namespace:
+  create: true
+  name: kubarr-frontend
+replicaCount: 1
+image:
+  repository: kubarr-frontend
+  pullPolicy: Never
+  tag: "0.1.0"
+service:
+  type: ClusterIP
+  port: 80
+resources:
+  limits:
+    cpu: 50m
+    memory: 32Mi
+  requests:
+    cpu: 10m
+    memory: 16Mi
+imagePullSecrets: []
+nodeSelector: {}
+tolerations: []
+affinity: {}

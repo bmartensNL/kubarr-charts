@@ -67,10 +67,8 @@ transmission:
 # Security context
 securityContext:
   runAsNonRoot: false
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-      - ALL
+  allowPrivilegeEscalation: true
+  capabilities: {}
   readOnlyRootFilesystem: false
 
 # Pod security context
@@ -138,7 +136,7 @@ vpn:
 networkPolicy:
   enabled: true
   ingressFrom:
-    - kubarr-system  # kubarr dashboard proxy
+    - openresty  # Kubarr gateway proxy
     - sonarr
     - radarr
     - victoriametrics

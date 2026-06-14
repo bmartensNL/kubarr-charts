@@ -27,6 +27,27 @@ spec:
       serviceAccountName: {{ include "rutorrent.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: prepare-runtime-dirs
+          image: busybox:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - mkdir -p /var/lib/nginx/logs /var/lib/nginx/tmp && chown -R 1000:1000 /var/lib/nginx && chmod -R 0777 /var/lib/nginx
+          securityContext:
+            runAsUser: 0
+            runAsNonRoot: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - CHOWN
+                - FOWNER
+          volumeMounts:
+            - name: nginx-state
+              mountPath: /var/lib/nginx
       containers:
         {{- if .Values.vpn.enabled }}
         # Gluetun VPN sidecar - routes all pod traffic through VPN
@@ -131,6 +152,10 @@ spec:
           volumeMounts:
             {{- include "kubarr-common.storage.configMount" (dict "root" .) | nindent 12 }}
             {{- include "kubarr-common.storage.mediaMount" (dict "root" . "mountPath" "/downloads" "subPath" .Values.storage.media.downloadsSubPath) | nindent 12 }}
+            - name: nginx-state
+              mountPath: /var/lib/nginx
       volumes:
         {{- include "kubarr-common.storage.configOrMediaVolume" (dict "root" . "fullname" (include "rutorrent.fullname" .)) | nindent 8 }}
+        - name: nginx-state
+          emptyDir: {}
       {{- include "kubarr-common.scheduling" . | nindent 6 }}

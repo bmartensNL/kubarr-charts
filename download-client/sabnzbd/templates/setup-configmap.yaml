@@ -30,21 +30,18 @@ data:
       WAITED=$((WAITED + 5))
     done
 
-    echo "[setup] Config file found, checking API key..."
+    echo "[setup] Config file found, checking settings..."
 
     # Check if API key is already set to our known value
     CURRENT_KEY=$(grep -E "^api_key\s*=" "$CONFIG_FILE" 2>/dev/null | cut -d'=' -f2 | tr -d ' ')
-
-    if [ "$CURRENT_KEY" = "$API_KEY" ]; then
-      echo "[setup] API key already configured correctly"
-      exit 0
-    fi
 
     # Wait a moment for SABnzbd to finish initial setup
     sleep 10
 
     # Update or add the API key
-    if grep -q "^api_key" "$CONFIG_FILE" 2>/dev/null; then
+    if [ "$CURRENT_KEY" = "$API_KEY" ]; then
+      echo "[setup] API key already configured correctly"
+    elif grep -q "^api_key" "$CONFIG_FILE" 2>/dev/null; then
       echo "[setup] Updating existing API key..."
       sed -i "s/^api_key.*/api_key = $API_KEY/" "$CONFIG_FILE"
     else
@@ -76,10 +73,14 @@ data:
       fi
     fi
 
-    # SABnzbd does not serve correctly when Kubarr forwards the base path
-    # upstream. Keep it at root and let the backend proxy strip /sabnzbd.
+    # SABnzbd serves at root. Kubarr's gateway strips /sabnzbd upstream and
+    # rewrites root-relative redirects back under /sabnzbd.
     if grep -q "^url_base" "$CONFIG_FILE" 2>/dev/null; then
-      sed -i "s|^url_base.*|url_base = |" "$CONFIG_FILE"
+      sed -i "s|^url_base.*|url_base = {{ .Values.sabnzbd.basePath }}|" "$CONFIG_FILE"
+    else
+      if grep -q "^\[misc\]" "$CONFIG_FILE"; then
+        sed -i "/^\[misc\]/a url_base = {{ .Values.sabnzbd.basePath }}" "$CONFIG_FILE"
+      fi
     fi
 
     echo "[setup] SABnzbd API key configured successfully"

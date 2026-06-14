@@ -83,5 +83,5 @@ podAnnotations: {}
 networkPolicy:
   enabled: true
   ingressFrom:
-    - kubarr-system  # kubarr dashboard proxy
+    - openresty  # Kubarr gateway proxy
   egressTo: []  # Dashboard needs to talk to kube-apiserver (allowed by default)

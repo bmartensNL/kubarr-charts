@@ -41,6 +41,9 @@ sabnzbd:
     # Timezone
     TZ: "Etc/UTC"
 
+  # SABnzbd serves at root; Kubarr strips /sabnzbd and rewrites root redirects.
+  basePath: ""
+
   # Probes configuration
   livenessProbe:
     enabled: true
@@ -65,10 +68,8 @@ sabnzbd:
 # Security context
 securityContext:
   runAsNonRoot: false  # linuxserver images run as root but switch to PUID/PGID
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-      - ALL
+  allowPrivilegeEscalation: true
+  capabilities: {}
   readOnlyRootFilesystem: false
 
 # Pod security context
@@ -140,7 +141,7 @@ storage:
 networkPolicy:
   enabled: true
   ingressFrom:
-    - kubarr-system  # kubarr dashboard proxy
+    - openresty  # Kubarr gateway proxy
     - sonarr         # arr apps connecting to download client
     - radarr
     - victoriametrics  # metrics scraping

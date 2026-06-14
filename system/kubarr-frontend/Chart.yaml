@@ -1,0 +1,12 @@
+apiVersion: v2
+name: kubarr-frontend
+description: Kubarr static frontend
+type: application
+version: 0.2.2
+annotations:
+  kubarr.io/display-name: "Kubarr Frontend"
+  kubarr.io/icon: "🖥️"
+  kubarr.io/category: "system"
+  kubarr.io/system: "true"
+  kubarr.io/hidden: "false"
+  kubarr.io/browseable: "false"
