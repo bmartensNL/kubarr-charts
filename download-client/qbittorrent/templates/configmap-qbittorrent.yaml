@@ -39,7 +39,7 @@ data:
     Connection\UPnP=false
     Downloads\SavePath=/downloads/
     Downloads\TempPath=/downloads/incomplete/
-    WebUI\Address=*
+    WebUI\Address=0.0.0.0
     WebUI\ServerDomains=*
     WebUI\LocalHostAuth=false
     WebUI\AuthSubnetWhitelistEnabled=true
