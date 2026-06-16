@@ -9,6 +9,7 @@ image:
   tag: "0.1.0"
 pollIntervalSeconds: 5
 reconcileIntervalSeconds: 30
+domainReconcileIntervalSeconds: 60
 database:
   namespace: kubarr-database
   name: kubarr
@@ -70,6 +71,12 @@ rbac:
     - apiGroups: ["coordination.k8s.io"]
       resources: ["leases"]
       verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
+    - apiGroups: ["cert-manager.io"]
+      resources: ["certificates", "issuers", "clusterissuers", "certificaterequests"]
+      verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
+    - apiGroups: ["acme.cert-manager.io"]
+      resources: ["orders", "challenges"]
+      verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
     - nonResourceURLs: ["/metrics", "/metrics/cadvisor"]
       verbs: ["get"]
 podAnnotations: {}
@@ -113,3 +120,13 @@ env:
 nodeSelector: {}
 tolerations: []
 affinity: {}
+# Vertical Pod Autoscaler. Requires the VPA operator/CRD in the cluster.
+vpa:
+  enabled: false
+  updateMode: Auto
+  containerName: "*"
+  controlledResources:
+    - cpu
+    - memory
+  minAllowed: {}
+  maxAllowed: {}

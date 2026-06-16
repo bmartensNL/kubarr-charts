@@ -146,3 +146,13 @@ networkPolicy:
     - radarr
     - victoriametrics  # metrics scraping
   egressTo: []       # download clients mainly need outbound internet
+# Vertical Pod Autoscaler. Requires the VPA operator/CRD in the cluster.
+vpa:
+  enabled: false
+  updateMode: Auto
+  containerName: "*"
+  controlledResources:
+    - cpu
+    - memory
+  minAllowed: {}
+  maxAllowed: {}

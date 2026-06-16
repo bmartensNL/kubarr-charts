@@ -69,3 +69,14 @@ networkPolicy:
   # Fluent Bit needs to send logs to VictoriaLogs
   egressTo:
     - victorialogs
+# Vertical Pod Autoscaler. Requires the VPA operator/CRD in the cluster.
+vpa:
+  enabled: false
+  targetKind: DaemonSet
+  updateMode: Auto
+  containerName: "*"
+  controlledResources:
+    - cpu
+    - memory
+  minAllowed: {}
+  maxAllowed: {}

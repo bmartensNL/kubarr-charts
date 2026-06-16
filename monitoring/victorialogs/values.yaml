@@ -73,3 +73,13 @@ networkPolicy:
     - fluent-bit     # for log ingestion
     - grafana        # for log queries
     - kubarr-backend  # Kubarr backend for log queries
+# Vertical Pod Autoscaler. Requires the VPA operator/CRD in the cluster.
+vpa:
+  enabled: false
+  updateMode: Auto
+  containerName: "*"
+  controlledResources:
+    - cpu
+    - memory
+  minAllowed: {}
+  maxAllowed: {}

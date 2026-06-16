@@ -99,14 +99,26 @@ livenessProbe:
   httpGet:
     path: /api/system/health
     port: 8000
-  initialDelaySeconds: 1
+  initialDelaySeconds: 30
   periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
 readinessProbe:
   httpGet:
     path: /api/system/health
     port: 8000
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 6
+startupProbe:
+  httpGet:
+    path: /api/system/health
+    port: 8000
   initialDelaySeconds: 0
-  periodSeconds: 1
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 24
 env:
   - name: KUBARR_IN_CLUSTER
     value: "true"
@@ -129,3 +141,13 @@ env:
 nodeSelector: {}
 tolerations: []
 affinity: {}
+# Vertical Pod Autoscaler. Requires the VPA operator/CRD in the cluster.
+vpa:
+  enabled: false
+  updateMode: Auto
+  containerName: "*"
+  controlledResources:
+    - cpu
+    - memory
+  minAllowed: {}
+  maxAllowed: {}

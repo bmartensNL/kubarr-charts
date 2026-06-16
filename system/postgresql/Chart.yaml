@@ -4,8 +4,10 @@ description: Plain PostgreSQL database for kubarr
 type: application
 version: 16.1.2
 annotations:
+  kubarr.io/display-name: "PostgreSQL"
+  kubarr.io/icon: "🐘"
+  kubarr.io/category: "system"
   kubarr.io/system: "true"
-  kubarr.io/hidden: "true"
 dependencies:
   - name: kubarr-common
     version: 0.3.1

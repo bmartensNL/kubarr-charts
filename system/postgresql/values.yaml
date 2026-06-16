@@ -52,3 +52,14 @@ readinessProbe:
 nodeSelector: {}
 tolerations: []
 affinity: {}
+# Vertical Pod Autoscaler. Requires the VPA operator/CRD in the cluster.
+vpa:
+  enabled: false
+  targetKind: StatefulSet
+  updateMode: Auto
+  containerName: "*"
+  controlledResources:
+    - cpu
+    - memory
+  minAllowed: {}
+  maxAllowed: {}

@@ -79,6 +79,15 @@ data:
           proxy_set_header X-Original-URI $request_uri;
         }
 
+        location = /_kubarr_route_lookup {
+          internal;
+          proxy_pass http://kubarr_api/api/proxy-auth/route?host=$arg_host&path=$arg_path;
+          proxy_pass_request_body off;
+          proxy_set_header Content-Length "";
+          proxy_set_header Cookie $http_cookie;
+          proxy_set_header X-Original-URI $request_uri;
+        }
+
         location ~ ^/(?<absolute_app_path>(:|activities|api/v1|css|js|themes|render|json|images|icons|ui_images|media|status|updater|gettext\.js|_next|web|site\.webmanifest|logo_stacked\.svg|apple-[^/]+|favicon-[^/]+)(/.*)?)$ {
           set $app_name "";
           set $app_upstream "";
@@ -135,6 +144,35 @@ data:
           set $target_path "";
 
           access_by_lua_block {
+            local route = ngx.location.capture("/_kubarr_route_lookup", {
+              args = { host = ngx.var.host, path = ngx.var.uri }
+            })
+
+            if route.status == ngx.HTTP_OK or route.status == ngx.HTTP_NO_CONTENT then
+              local app_name = route.header["x-kubarr-app-name"]
+              local upstream = route.header["x-kubarr-upstream"]
+              local target_path = route.header["x-kubarr-target-path"] or ngx.var.uri
+              if not app_name or app_name == "" or not upstream or upstream == "" then
+                ngx.log(ngx.ERR, "route lookup response missing app/upstream headers")
+                return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+              end
+
+              ngx.var.app_name = app_name
+              ngx.var.app_upstream = upstream
+              ngx.var.app_base_path = route.header["x-kubarr-base-path"] or ""
+              ngx.var.target_path = target_path
+              return
+            end
+
+            if route.status == ngx.HTTP_UNAUTHORIZED or route.status == ngx.HTTP_FORBIDDEN then
+              return ngx.exit(route.status)
+            end
+
+            if route.status ~= ngx.HTTP_NOT_FOUND then
+              ngx.log(ngx.ERR, "route lookup failed with status ", route.status)
+              return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+            end
+
             local auth = ngx.location.capture("/_kubarr_app_auth/" .. ngx.var.app_name)
             if auth.status == ngx.HTTP_UNAUTHORIZED or auth.status == ngx.HTTP_FORBIDDEN then
               return ngx.exit(auth.status)
@@ -222,6 +260,46 @@ data:
         }
 
         location / {
+          set $app_name "";
+          set $app_upstream "http://{{ .Values.frontend.service.name }}.{{ .Values.frontend.service.namespace }}.svc.cluster.local:{{ .Values.frontend.service.port }}";
+          set $app_base_path "";
+          set $target_path $uri;
+
+          access_by_lua_block {
+            if not ngx.var.http_cookie or ngx.var.http_cookie == "" then
+              return
+            end
+
+            local route = ngx.location.capture("/_kubarr_route_lookup", {
+              args = { host = ngx.var.host, path = ngx.var.uri }
+            })
+
+            if route.status == ngx.HTTP_OK or route.status == ngx.HTTP_NO_CONTENT then
+              local app_name = route.header["x-kubarr-app-name"]
+              local upstream = route.header["x-kubarr-upstream"]
+              local target_path = route.header["x-kubarr-target-path"] or ngx.var.uri
+              if not app_name or app_name == "" or not upstream or upstream == "" then
+                ngx.log(ngx.ERR, "route lookup response missing app/upstream headers")
+                return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+              end
+
+              ngx.var.app_name = app_name
+              ngx.var.app_upstream = upstream
+              ngx.var.app_base_path = route.header["x-kubarr-base-path"] or ""
+              ngx.var.target_path = target_path
+              return
+            end
+
+            if route.status == ngx.HTTP_UNAUTHORIZED or route.status == ngx.HTTP_FORBIDDEN then
+              return ngx.exit(route.status)
+            end
+
+            if route.status ~= ngx.HTTP_NOT_FOUND then
+              ngx.log(ngx.ERR, "route lookup failed with status ", route.status)
+              return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+            end
+          }
+
           proxy_http_version 1.1;
           proxy_intercept_errors on;
           error_page 404 = @frontend_index;
@@ -229,7 +307,23 @@ data:
           proxy_set_header X-Real-IP $remote_addr;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
-          proxy_pass http://kubarr_frontend;
+          proxy_set_header X-Forwarded-Prefix /$app_name;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection $connection_upgrade;
+          proxy_redirect off;
+          header_filter_by_lua_block {
+            if ngx.var.app_name == "" then
+              return
+            end
+            local location = ngx.header["Location"]
+            if location then
+              local path = location:match("^https?://[^/]+(/.*)$") or location
+              if path:sub(1, 1) == "/" then
+                ngx.header["Location"] = path
+              end
+            end
+          }
+          proxy_pass $app_upstream$target_path$is_args$args;
         }
 
         location @frontend_index {

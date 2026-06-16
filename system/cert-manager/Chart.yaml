@@ -1,0 +1,16 @@
+apiVersion: v2
+name: cert-manager
+description: cert-manager controller for Kubarr managed TLS certificates
+type: application
+version: 1.16.3
+annotations:
+  kubarr.io/display-name: "cert-manager"
+  kubarr.io/icon: "🔐"
+  kubarr.io/category: "system"
+  kubarr.io/system: "true"
+  kubarr.io/hidden: "false"
+  kubarr.io/browseable: "false"
+dependencies:
+  - name: cert-manager
+    version: v1.16.3
+    repository: https://charts.jetstack.io

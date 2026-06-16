@@ -174,3 +174,41 @@ tolerations:
   {{- toYaml . | nindent 2 }}
 {{- end }}
 {{- end }}
+
+{{- define "kubarr-common.vpa" -}}
+{{- $root := .root -}}
+{{- with $root.Values.vpa -}}
+{{- if .enabled }}
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: {{ include "kubarr-common.fullname" $root }}
+  namespace: {{ $root.Values.namespace.name }}
+  labels:
+    {{- include "kubarr-common.labels" $root | nindent 4 }}
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: {{ default "Deployment" .targetKind }}
+    name: {{ include "kubarr-common.fullname" $root }}
+  updatePolicy:
+    updateMode: {{ default "Auto" .updateMode | quote }}
+  resourcePolicy:
+    containerPolicies:
+      - containerName: {{ default "*" .containerName | quote }}
+        controlledResources:
+          {{- toYaml (default (list "cpu" "memory") .controlledResources) | nindent 10 }}
+        {{- with .minAllowed }}
+        minAllowed:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .maxAllowed }}
+        maxAllowed:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .controlledValues }}
+        controlledValues: {{ . | quote }}
+        {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

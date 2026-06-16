@@ -1,0 +1,6 @@
+apiVersion: v2
+name: kubarr-dns-webhook
+description: Kubarr cert-manager DNS01 webhook solvers
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

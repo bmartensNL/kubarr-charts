@@ -1,0 +1,56 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "kubarr-dns-webhook.name" . }}
+  labels:
+    {{- include "kubarr-dns-webhook.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "kubarr-dns-webhook.name" . }}
+  labels:
+    {{- include "kubarr-dns-webhook.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "kubarr-dns-webhook.name" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "kubarr-dns-webhook.name" . }}
+    namespace: {{ .Values.namespace.name }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "kubarr-dns-webhook.name" . }}:auth-delegator
+  labels:
+    {{- include "kubarr-dns-webhook.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "kubarr-dns-webhook.name" . }}
+    namespace: {{ .Values.namespace.name }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "kubarr-dns-webhook.name" . }}:extension-apiserver-authentication-reader
+  namespace: kube-system
+  labels:
+    {{- include "kubarr-dns-webhook.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: extension-apiserver-authentication-reader
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "kubarr-dns-webhook.name" . }}
+    namespace: {{ .Values.namespace.name }}

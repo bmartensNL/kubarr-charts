@@ -1,0 +1,27 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "kubarr-dns-webhook.name" . }}-selfsigned
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "kubarr-dns-webhook.labels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "kubarr-dns-webhook.name" . }}-serving-cert
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "kubarr-dns-webhook.labels" . | nindent 4 }}
+spec:
+  secretName: {{ include "kubarr-dns-webhook.name" . }}-serving-cert
+  duration: 8760h
+  renewBefore: 720h
+  issuerRef:
+    name: {{ include "kubarr-dns-webhook.name" . }}-selfsigned
+  dnsNames:
+    - {{ include "kubarr-dns-webhook.name" . }}
+    - {{ include "kubarr-dns-webhook.name" . }}.{{ .Values.namespace.name }}
+    - {{ include "kubarr-dns-webhook.name" . }}.{{ .Values.namespace.name }}.svc

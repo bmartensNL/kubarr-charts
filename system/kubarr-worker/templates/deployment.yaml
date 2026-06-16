@@ -52,6 +52,8 @@ spec:
               value: {{ .Values.pollIntervalSeconds | default 5 | quote }}
             - name: KUBARR_WORKER_RECONCILE_INTERVAL_SECONDS
               value: {{ .Values.reconcileIntervalSeconds | default 30 | quote }}
+            - name: KUBARR_DOMAIN_RECONCILE_INTERVAL_SECONDS
+              value: {{ .Values.domainReconcileIntervalSeconds | default 60 | quote }}
           volumeMounts:
             - name: storage
               mountPath: {{ .Values.storage.mountPath }}

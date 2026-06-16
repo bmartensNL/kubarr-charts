@@ -14,7 +14,6 @@ annotations:
   kubarr.io/icon: "📥"
   kubarr.io/category: "monitoring"
   kubarr.io/system: "true"
-  kubarr.io/hidden: "true"
 dependencies:
   - name: kubarr-common
     version: 0.3.1

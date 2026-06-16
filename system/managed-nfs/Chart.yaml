@@ -4,5 +4,7 @@ description: Managed NFS server for Kubarr shared media storage
 type: application
 version: 12.1.0
 annotations:
+  kubarr.io/display-name: "Managed NFS"
+  kubarr.io/icon: "📁"
+  kubarr.io/category: "system"
   kubarr.io/system: "true"
-  kubarr.io/hidden: "true"
