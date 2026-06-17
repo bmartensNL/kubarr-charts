@@ -291,7 +291,7 @@ data:
             end
 
             if route.status == ngx.HTTP_UNAUTHORIZED or route.status == ngx.HTTP_FORBIDDEN then
-              return ngx.exit(route.status)
+              return
             end
 
             if route.status ~= ngx.HTTP_NOT_FOUND then
