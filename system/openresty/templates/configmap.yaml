@@ -95,6 +95,23 @@ data:
           set $target_path "";
 
           access_by_lua_block {
+            -- Subdomain-routed apps (host assignments) resolve by host first;
+            -- referer matching below only covers path-based app access.
+            local route = ngx.location.capture("/_kubarr_route_lookup", {
+              args = { host = ngx.var.host, path = ngx.var.request_uri }
+            })
+            if route.status == ngx.HTTP_OK or route.status == ngx.HTTP_NO_CONTENT then
+              local routed_app = route.header["x-kubarr-app-name"]
+              local routed_upstream = route.header["x-kubarr-upstream"]
+              if routed_app and routed_app ~= "" and routed_upstream and routed_upstream ~= "" then
+                ngx.var.app_name = routed_app
+                ngx.var.app_upstream = routed_upstream
+                ngx.var.app_base_path = route.header["x-kubarr-base-path"] or ""
+                ngx.var.target_path = "/" .. ngx.var.absolute_app_path
+                return
+              end
+            end
+
             local referer = ngx.var.http_referer or ""
             local host = ngx.var.host:gsub("%.", "%%.")
             local app_name = referer:match("^https?://" .. host .. ":?%d*/([a-z0-9-]+)/")
