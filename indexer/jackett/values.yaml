@@ -14,7 +14,7 @@ jackett:
   image:
     repository: linuxserver/jackett
     pullPolicy: IfNotPresent
-    tag: "0.24.2045"
+    tag: "0.24.2406"
 
   # Service configuration
   service:
@@ -119,7 +119,7 @@ vpn:
   secretName: ""
   image:
     repository: qmcgaw/gluetun
-    tag: "v3.41.1"
+    tag: "v3.41.3"
     pullPolicy: IfNotPresent
   resources:
     requests:

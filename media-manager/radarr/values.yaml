@@ -12,7 +12,7 @@ radarr:
   image:
     repository: linuxserver/radarr
     pullPolicy: IfNotPresent
-    tag: "6.2.1"
+    tag: "6.3.0"
 
   # Service configuration
   service:
@@ -113,7 +113,7 @@ vpn:
   # Gluetun container image
   image:
     repository: qmcgaw/gluetun
-    tag: "v3.41.1"
+    tag: "v3.41.3"
     pullPolicy: IfNotPresent
   # Resource limits for Gluetun container
   resources:
@@ -152,7 +152,7 @@ exporter:
   enabled: true
   image:
     repository: ghcr.io/onedr0p/exportarr
-    tag: "v2.0"
+    tag: "v2.3.0"
     pullPolicy: IfNotPresent
   port: 9708
   # API key from Radarr (Settings > General > API Key)

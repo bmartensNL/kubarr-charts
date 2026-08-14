@@ -12,7 +12,7 @@ sonarr:
   image:
     repository: linuxserver/sonarr
     pullPolicy: IfNotPresent
-    tag: "4.0.17"
+    tag: "4.0.19"
 
   # Service configuration
   service:
@@ -113,7 +113,7 @@ vpn:
   # Gluetun container image
   image:
     repository: qmcgaw/gluetun
-    tag: "v3.41.1"
+    tag: "v3.41.3"
     pullPolicy: IfNotPresent
   # Resource limits for Gluetun container
   resources:
@@ -154,7 +154,7 @@ exporter:
   enabled: true
   image:
     repository: ghcr.io/onedr0p/exportarr
-    tag: "v2.0"
+    tag: "v2.3.0"
     pullPolicy: IfNotPresent
   port: 9707
   # API key from Sonarr (Settings > General > API Key)

@@ -14,7 +14,7 @@ qbittorrent:
   image:
     repository: linuxserver/qbittorrent
     pullPolicy: IfNotPresent
-    tag: "5.2.1"
+    tag: "5.2.3"
 
   # Service configuration
   service:
@@ -134,7 +134,7 @@ vpn:
   # Gluetun container image
   image:
     repository: qmcgaw/gluetun
-    tag: "v3.41.1"
+    tag: "v3.41.3"
     pullPolicy: IfNotPresent
   # Resource limits for Gluetun container
   resources:

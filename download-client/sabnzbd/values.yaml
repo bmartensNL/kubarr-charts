@@ -14,7 +14,7 @@ sabnzbd:
   image:
     repository: linuxserver/sabnzbd
     pullPolicy: IfNotPresent
-    tag: "5.0.4"
+    tag: "5.1.0"
 
   # Service configuration
   service:
@@ -108,7 +108,7 @@ vpn:
   # Gluetun container image
   image:
     repository: qmcgaw/gluetun
-    tag: "v3.41.1"
+    tag: "v3.41.3"
     pullPolicy: IfNotPresent
   # Resource limits for Gluetun container
   resources:
