@@ -46,6 +46,10 @@ jackett:
   # Base path for reverse proxy (e.g., /jackett)
   basePath: "/jackett"
 
+  # Fixed API key so media managers (Sonarr/Radarr) can sync indexers
+  # (same convention as the SABnzbd setup key)
+  apiKey: "kubarr-jackett-api-key-12345"
+
   # Probes configuration
   livenessProbe:
     enabled: true

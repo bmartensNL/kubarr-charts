@@ -6,6 +6,130 @@ metadata:
   labels:
     {{- include "sonarr.labels" . | nindent 4 }}
 data:
+  setup-indexers.sh: |
+    #!/bin/bash
+    # Sync configured Jackett indexers into Sonarr as Torznab indexers.
+    # Adds "Jackett - <id>" entries for every configured Jackett indexer,
+    # removes entries whose indexer disappeared from Jackett.
+
+    CONFIG_FILE="/config/config.xml"
+    API_PORT="8989"
+    API_BASE="/sonarr"
+    CHECK_INTERVAL=30
+    PREFIX="Jackett - "
+
+    JACKETT_HOST="jackett.jackett.svc.cluster.local"
+    JACKETT_PORT="9117"
+    JACKETT_BASE="/jackett"
+    # Must match jackett chart's .Values.jackett.apiKey
+    JACKETT_API_KEY="kubarr-jackett-api-key-12345"
+    # Torznab TV categories
+    CATEGORIES='[5000,5030,5040]'
+
+    get_api_key() {
+      sed -n 's/.*<ApiKey>\([^<]*\)<\/ApiKey>.*/\1/p' "$CONFIG_FILE" 2>/dev/null
+    }
+
+    is_api_ready() {
+      curl -s -f -H "X-Api-Key: $1" "http://localhost:$API_PORT$API_BASE/api/v3/system/status" > /dev/null 2>&1
+    }
+
+    jackett_indexer_ids() {
+      # Top-level indexer ids are lowercase "id"; nested caps use "ID"
+      curl -s -f --connect-timeout 3 \
+        "http://$JACKETT_HOST:$JACKETT_PORT$JACKETT_BASE/api/v2.0/indexers?configured=true&apikey=$JACKETT_API_KEY" 2>/dev/null |
+        tr '{' '\n' | sed -n 's/.*"id": *"\([^"]*\)".*/\1/p' | sort -u
+    }
+
+    arr_indexers_json() {
+      curl -s -H "X-Api-Key: $1" "http://localhost:$API_PORT$API_BASE/api/v3/indexer"
+    }
+
+    existing_jackett_names() {
+      arr_indexers_json "$1" | grep -o "\"name\": *\"$PREFIX[^\"]*\"" | sed "s/.*\"$PREFIX/$PREFIX/;s/\"$//"
+    }
+
+    add_indexer() {
+      local api_key="$1"
+      local jid="$2"
+      curl -s -X POST -H "X-Api-Key: $api_key" -H "Content-Type: application/json" \
+        "http://localhost:$API_PORT$API_BASE/api/v3/indexer" \
+        -d "{
+          \"name\": \"$PREFIX$jid\",
+          \"implementation\": \"Torznab\",
+          \"implementationName\": \"Torznab\",
+          \"configContract\": \"TorznabSettings\",
+          \"protocol\": \"torrent\",
+          \"priority\": 25,
+          \"enableRss\": true,
+          \"enableAutomaticSearch\": true,
+          \"enableInteractiveSearch\": true,
+          \"tags\": [],
+          \"fields\": [
+            {\"name\": \"baseUrl\", \"value\": \"http://$JACKETT_HOST:$JACKETT_PORT$JACKETT_BASE/api/v2.0/indexers/$jid/results/torznab/\"},
+            {\"name\": \"apiPath\", \"value\": \"/api\"},
+            {\"name\": \"apiKey\", \"value\": \"$JACKETT_API_KEY\"},
+            {\"name\": \"categories\", \"value\": $CATEGORIES},
+            {\"name\": \"minimumSeeders\", \"value\": 1}
+          ]
+        }"
+    }
+
+    # Removal needs the numeric indexer id; jq parses reliably. Without jq
+    # the sync is add-only, which is still correct for the common case.
+    remove_stale_indexers() {
+      local api_key="$1"
+      local wanted="$2"
+      command -v jq > /dev/null 2>&1 || return 0
+      arr_indexers_json "$api_key" |
+        jq -r ".[] | select(.name | startswith(\"$PREFIX\")) | \"\(.id)|\(.name)\"" |
+        while IFS='|' read -r db_id name; do
+          jid="${name#"$PREFIX"}"
+          if ! echo "$wanted" | grep -qx "$jid"; then
+            echo "[indexer-sync] $name no longer configured in Jackett, removing..."
+            curl -s -X DELETE -H "X-Api-Key: $api_key" \
+              "http://localhost:$API_PORT$API_BASE/api/v3/indexer/$db_id"
+          fi
+        done
+    }
+
+    echo "[indexer-sync] Starting Jackett indexer sync..."
+    while true; do
+      API_KEY=$(get_api_key)
+      if [ -n "$API_KEY" ] && is_api_ready "$API_KEY"; then
+        break
+      fi
+      sleep 2
+    done
+    echo "[indexer-sync] API is ready"
+
+    while true; do
+      API_KEY=$(get_api_key)
+      if ! is_api_ready "$API_KEY"; then
+        sleep $CHECK_INTERVAL
+        continue
+      fi
+
+      WANTED=$(jackett_indexer_ids)
+      if [ -n "$WANTED" ]; then
+        EXISTING=$(existing_jackett_names "$API_KEY")
+        echo "$WANTED" | while read -r jid; do
+          [ -z "$jid" ] && continue
+          if ! echo "$EXISTING" | grep -qx "$PREFIX$jid"; then
+            echo "[indexer-sync] Adding $PREFIX$jid..."
+            response=$(add_indexer "$API_KEY" "$jid")
+            if echo "$response" | grep -q '"id"'; then
+              echo "[indexer-sync] Added $PREFIX$jid"
+            else
+              echo "[indexer-sync] Failed to add $PREFIX$jid: $(echo "$response" | head -c 300)"
+            fi
+          fi
+        done
+        remove_stale_indexers "$API_KEY" "$WANTED"
+      fi
+
+      sleep $CHECK_INTERVAL
+    done
   setup-downloadclients.sh: |
     #!/bin/bash
     # Setup script to manage download clients in Sonarr

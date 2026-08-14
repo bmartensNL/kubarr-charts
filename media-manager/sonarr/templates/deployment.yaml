@@ -189,6 +189,9 @@ spec:
             - name: setup-scripts
               mountPath: /custom-services.d/setup-downloadclients
               subPath: setup-downloadclients.sh
+            - name: setup-scripts
+              mountPath: /custom-services.d/setup-indexers
+              subPath: setup-indexers.sh
       volumes:
         {{- include "kubarr-common.storage.configOrMediaVolume" (dict "root" . "fullname" (include "sonarr.fullname" .)) | nindent 8 }}
         - name: setup-scripts
