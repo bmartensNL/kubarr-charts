@@ -35,10 +35,11 @@ data:
     }
 
     jackett_indexer_ids() {
-      # Top-level indexer ids are lowercase "id"; nested caps use "ID"
-      curl -s -f --connect-timeout 3 \
-        "http://$JACKETT_HOST:$JACKETT_PORT$JACKETT_BASE/api/v2.0/indexers?configured=true&apikey=$JACKETT_API_KEY" 2>/dev/null |
-        tr '{' '\n' | sed -n 's/.*"id": *"\([^"]*\)".*/\1/p' | sort -u
+      # The JSON admin API needs cookie auth; the Torznab t=indexers query
+      # works with the api key and lists configured indexers as XML.
+      curl -s -f --connect-timeout 5 \
+        "http://$JACKETT_HOST:$JACKETT_PORT$JACKETT_BASE/api/v2.0/indexers/all/results/torznab/api?apikey=$JACKETT_API_KEY&t=indexers&configured=true" 2>/dev/null |
+        grep -o '<indexer id="[^"]*"' | sed 's/.*id="//;s/"$//' | sort -u
     }
 
     arr_indexers_json() {

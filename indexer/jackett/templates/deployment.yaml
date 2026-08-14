@@ -45,10 +45,14 @@ spec:
                 cat > /config/Jackett/ServerConfig.json << 'EOF'
               {"BasePathOverride":"{{ .Values.jackett.basePath }}","UpdateDisabled":true,"APIKey":"{{ .Values.jackett.apiKey }}"}
               EOF
+              {{- if .Values.jackett.apiKey }}
               else
                 # Keep the API key pinned so indexer sync in media managers stays valid
                 sed -i 's/"APIKey": *"[^"]*"/"APIKey":"{{ .Values.jackett.apiKey }}"/' /config/Jackett/ServerConfig.json
               fi
+              {{- else }}
+              fi
+              {{- end }}
           volumeMounts:
             {{- include "kubarr-common.storage.configMount" (dict "root" . "mountPath" "/config") | nindent 12 }}
       {{- end }}
