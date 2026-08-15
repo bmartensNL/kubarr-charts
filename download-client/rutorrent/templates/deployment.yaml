@@ -61,6 +61,9 @@ spec:
                 - ALL
               add:
                 - NET_ADMIN
+          volumeMounts:
+            - name: dev-net-tun
+              mountPath: /dev/net/tun
           envFrom:
             - secretRef:
                 name: {{ .Values.vpn.secretName }}
@@ -155,6 +158,12 @@ spec:
             - name: nginx-state
               mountPath: /var/lib/nginx
       volumes:
+        {{- if .Values.vpn.enabled }}
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
+        {{- end }}
         {{- include "kubarr-common.storage.configOrMediaVolume" (dict "root" . "fullname" (include "rutorrent.fullname" .)) | nindent 8 }}
         - name: nginx-state
           emptyDir: {}

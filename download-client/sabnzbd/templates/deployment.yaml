@@ -40,6 +40,9 @@ spec:
                 - ALL
               add:
                 - NET_ADMIN
+          volumeMounts:
+            - name: dev-net-tun
+              mountPath: /dev/net/tun
           envFrom:
             - secretRef:
                 name: {{ .Values.vpn.secretName }}
@@ -138,6 +141,12 @@ spec:
               mountPath: /custom-services.d/setup-apikey
               subPath: setup-apikey.sh
       volumes:
+        {{- if .Values.vpn.enabled }}
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
+        {{- end }}
         {{- include "kubarr-common.storage.configOrMediaVolume" (dict "root" . "fullname" (include "sabnzbd.fullname" .)) | nindent 8 }}
         # Setup script configmap for API key configuration
         - name: setup-script

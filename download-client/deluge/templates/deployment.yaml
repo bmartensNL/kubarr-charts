@@ -41,6 +41,9 @@ spec:
                 - ALL
               add:
                 - NET_ADMIN
+          volumeMounts:
+            - name: dev-net-tun
+              mountPath: /dev/net/tun
           envFrom:
             - secretRef:
                 name: {{ .Values.vpn.secretName }}
@@ -136,6 +139,12 @@ spec:
               mountPath: /custom-cont-init.d/enable-label-plugin.sh
               subPath: enable-label-plugin.sh
       volumes:
+        {{- if .Values.vpn.enabled }}
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
+        {{- end }}
         {{- include "kubarr-common.storage.configOrMediaVolume" (dict "root" . "fullname" (include "deluge.fullname" .)) | nindent 8 }}
         - name: setup-scripts
           configMap:
