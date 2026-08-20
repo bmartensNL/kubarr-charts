@@ -2,7 +2,7 @@ apiVersion: v2
 name: rutorrent
 description: Feature-rich BitTorrent client with powerful web interface
 type: application
-version: 3.11.4
+version: 3.11.5
 keywords:
   - rutorrent
   - bittorrent

@@ -2,7 +2,7 @@ apiVersion: v2
 name: postgresql
 description: Plain PostgreSQL database for kubarr
 type: application
-version: 16.1.2
+version: 16.1.3
 annotations:
   kubarr.io/display-name: "PostgreSQL"
   kubarr.io/icon: "🐘"
