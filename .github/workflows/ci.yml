@@ -16,6 +16,7 @@ jobs:
           version: v3.21.0
       - run: |
           set -euo pipefail
+          helm repo add jetstack https://charts.jetstack.io
 
           while IFS= read -r chart_yaml; do
             chart=$(dirname "$chart_yaml")
@@ -44,7 +45,7 @@ jobs:
                   exit 1
                 fi
               fi
-              if grep -q 'kubarr-common' "$chart/Chart.yaml"; then
+              if grep -q '^dependencies:' "$chart/Chart.yaml"; then
                 helm dependency build "$chart"
               fi
               helm lint "$chart"
