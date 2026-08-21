@@ -2,7 +2,8 @@ apiVersion: v2
 name: cert-manager
 description: cert-manager controller for Kubarr managed TLS certificates
 type: application
-version: 1.16.4
+version: 1.21.1
+appVersion: "1.21.1"
 annotations:
   kubarr.io/display-name: "cert-manager"
   kubarr.io/icon: "🔐"

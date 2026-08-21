@@ -6,7 +6,7 @@ replicaCount: 1
 image:
   repository: kubarr-worker
   pullPolicy: Never
-  tag: "0.1.0"
+  tag: "latest"
 pollIntervalSeconds: 5
 reconcileIntervalSeconds: 30
 domainReconcileIntervalSeconds: 60
